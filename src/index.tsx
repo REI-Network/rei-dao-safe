@@ -4,6 +4,10 @@ import * as ReactDOM from "react-dom/client"
 import { App } from "./App"
 import reportWebVitals from "./reportWebVitals"
 import * as serviceWorker from "./serviceWorker"
+import { BrowserRouter } from 'react-router-dom';
+import SafeProvider from '@safe-global/safe-apps-react-sdk';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 
 const container = document.getElementById("root")
@@ -12,8 +16,14 @@ const root = ReactDOM.createRoot(container)
 
 root.render(
   <React.StrictMode>
-    <ColorModeScript />
-    <App />
+    <SafeProvider>
+      <Provider store={store}>
+        <BrowserRouter>
+          <ColorModeScript />
+          <App />
+        </BrowserRouter>
+      </Provider>
+    </SafeProvider>
   </React.StrictMode>,
 )
 

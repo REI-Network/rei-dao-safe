@@ -1,38 +1,77 @@
-import * as React from "react"
+import { useState,useEffect } from "react"
 import {
   ChakraProvider,
+  Container,
   Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
   theme,
-} from "@chakra-ui/react"
-import { ColorModeSwitcher } from "./ColorModeSwitcher"
-import { Logo } from "./Logo"
+  extendTheme
+} from "@chakra-ui/react";
 
-export const App = () => (
-  <ChakraProvider theme={theme}>
-    <Box textAlign="center" fontSize="xl">
-      <Grid minH="100vh" p={3}>
-        <ColorModeSwitcher justifySelf="flex-end" />
-        <VStack spacing={8}>
-          <Logo h="40vmin" pointerEvents="none" />
-          <Text>
-            Edit <Code fontSize="xl">src/App.tsx</Code> and save to reload.
-          </Text>
-          <Link
-            color="teal.500"
-            href="https://chakra-ui.com"
-            fontSize="2xl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn Chakra
-          </Link>
-        </VStack>
-      </Grid>
-    </Box>
+import './App.css';
+import { useRoutes } from 'react-router-dom';
+import routeConfig from './Routes';
+import { useSafeAppsSDK } from '@safe-global/safe-apps-react-sdk';
+import SafeAppsSDK, { SafeInfo } from '@safe-global/safe-apps-sdk';
+import web3 from 'web3';
+import { useSelector, useDispatch } from 'react-redux';
+import { setBalanceInfo, setSafeInfo } from './store/SafeSlice';
+
+import { NavBar } from "./components/global/Navbar/Index"
+
+export const App = () => {
+  const routes = useRoutes(routeConfig);
+  const SDK = new SafeAppsSDK();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const init = async () => {
+      const safeInfo = await SDK.safe.getInfo();
+
+      const safeBalances = await SDK.safe.experimental_getBalances({
+        currency: 'usd',
+      });
+
+      dispatch(setSafeInfo({ safeInfo }));
+
+      let tokenMap: any = {};
+
+      safeBalances?.items?.forEach((item) => {
+        if(item.tokenInfo.type === "NATIVE_TOKEN") {
+          tokenMap['rei'] = {
+            balance: item.balance
+          }
+          
+        } else if(item.tokenInfo.type === "ERC20") {
+          tokenMap[item.tokenInfo.address] = {
+            balance: item.balance,
+            ...item.tokenInfo
+          }
+        }
+      })
+      if(tokenMap['rei']?.balance) {
+        let _balance = tokenMap['rei']?.balance || 0;
+        let balanceWei  = Number(Number((web3.utils.fromWei(_balance, 'ether')).toString()).toFixed(2))
+        dispatch(setBalanceInfo({ reiBalance: balanceWei, tokenMap }));
+      }
+    }
+    init();
+  },[])
+
+  const theme1 = extendTheme({
+    "colors": {
+      "blue": {
+        "500": "#6979f8",
+      }
+    }
+  });
+
+  
+  return (
+  <ChakraProvider theme={theme1}>
+    <Container maxW='1060px' p={'0'}>
+      <NavBar />
+      <Box className="layout-main">{routes}</Box>
+    </Container>
   </ChakraProvider>
-)
+  )
+}

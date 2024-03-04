@@ -1,6 +1,8 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Safe REI DAO App",
+  "name": "Safe REI DAO App",
+  "description": "REI DAO App for Safe Multisig Wallets",
+  "iconPath": "logo.svg",
   "icons": [
     {
       "src": "favicon.ico",
