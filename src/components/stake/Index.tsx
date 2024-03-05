@@ -14,7 +14,8 @@ import {
   Button,
   useDisclosure,
   Flex,
-  Spinner
+  Spinner,
+  Box
 } from '@chakra-ui/react';
 import { ApolloClient, InMemoryCache } from '@apollo/client/core';
 
@@ -122,7 +123,7 @@ export const Validator: React.FC<ValidatorProps> = ({ keyIndex }) => {
               <Tr>
                 <Th>Validator</Th>
                 <Th>Voting Power</Th>
-                <Th></Th>
+                <Th>Operation</Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -136,6 +137,13 @@ export const Validator: React.FC<ValidatorProps> = ({ keyIndex }) => {
                           ? item.info.nodeName
                           : addr(item.address)}
                       </Text>
+                      {item.active ? (
+                      <Box as="span"  fontSize="xs" className='activeText'>
+                        Active
+                      </Box>) : <Box as="span" fontSize="xs" className='inactiveText'>
+                        InActive
+                      </Box>}
+                      
                     </Stack>
                   </Td>
                   <Td>{item.votingPower}</Td>

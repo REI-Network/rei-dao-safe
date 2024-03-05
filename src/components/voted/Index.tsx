@@ -188,6 +188,7 @@ export const MyVoted: React.FC<ValidatorProps> = ({ keyIndex }) => {
               <Tr>
                 <Th>Validator</Th>
                 <Th>Commission Share Balance</Th>
+                <Th>Operation</Th>
               </Tr>
             </Thead>
             <Tbody>
